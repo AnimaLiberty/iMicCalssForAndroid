@@ -94,6 +94,12 @@
         <activity
             android:name=".module.account.UploadVideoActivity"
             android:label="资源上传" />
+        <activity
+            android:name=".module.main.WebActivity"
+            android:label="在线商城" />
+        <activity
+            android:name=".module.main.ServiceActivity"
+            android:label="在线客服" />
 
         <activity
             android:name=".module.qcxt.DeviceListActivity"

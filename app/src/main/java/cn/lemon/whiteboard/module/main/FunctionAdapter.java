@@ -1,6 +1,7 @@
 package cn.lemon.whiteboard.module.main;
 
 import android.content.Context;
+import android.widget.TextView;
 
 import cn.lemon.whiteboard.R;
 import cn.lemon.whiteboard.app.App;
@@ -11,6 +12,7 @@ import cn.lemon.whiteboard.widget.shape.Type;
 
 class FunctionAdapter extends FloatAdapter {
 
+    private TextView tvIndicate;
     private String[] mHints = {"删除", "多边形", "圆形", "矩形", "曲线", "直线"};
     private int[] mDrawables = {
             R.drawable.delete_page,
@@ -22,9 +24,10 @@ class FunctionAdapter extends FloatAdapter {
 
     private BoardView mBoardView;
 
-    public FunctionAdapter(Context context, BoardView boardView) {
+    public FunctionAdapter(Context context, BoardView boardView, TextView tvIndicate) {
         super(context);
         mBoardView = boardView;
+        this.tvIndicate = tvIndicate;
     }
 
     @Override
@@ -59,20 +62,24 @@ class FunctionAdapter extends FloatAdapter {
             case 1:// 多边形
                 mBoardView.setDrawType(Type.MULTI_LINE); // 多边形
                 MultiLineShape.clear();
-//                mBoardView.setDrawType(Type.WIPE);// 橡皮
+                tvIndicate.setText("多边形");
                 break;
             case 2:// 圆形
                 mBoardView.setDrawType(Type.OVAL);// 圆形
+                tvIndicate.setText("圆形");
                 break;
             case 3:// 矩形
                 mBoardView.setDrawType(Type.RECTANGLE);// 矩形
+                tvIndicate.setText("矩形");
                 break;
             case 4:// 曲线
                 mBoardView.setDrawType(Type.CURVE);// 曲线
                 App.getInstance().getPointFactory().clearScreen();
+                tvIndicate.setText("曲线");
                 break;
             case 5:// 直线
                 mBoardView.setDrawType(Type.LINE);// 直线
+                tvIndicate.setText("直线");
                 break;
             case 6:
                 break;

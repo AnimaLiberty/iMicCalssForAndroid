@@ -133,6 +133,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
     private ImageView ivEraser;
     private View toolBar;
     private ImageView ivBluetooth;
+    private TextView tvIndicate;
 
     private void Init_service() {
         System.out.println("Init_service");
@@ -342,6 +343,8 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
     }
 
     private void initView() {
+        tvIndicate = (TextView) findViewById(R.id.tv_indicate);
+
         mFloatViews = (FloatViewGroup) findViewById(R.id.float_view_group);
         mVpBoard = (SuperViewPager) findViewById(R.id.vp_board_list);
         mVpBoard.setScanScroll(false);
@@ -471,7 +474,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
         mVpBoard.setOffscreenPageLimit(9);// 防止销毁之前的页面   最多有10页
 
         // 初始化工具栏
-        mAdapter = new FunctionAdapter(this, null);
+        mAdapter = new FunctionAdapter(this, null,tvIndicate);
         mFloatViews.setAdapter(mAdapter);
     }
 
@@ -539,17 +542,20 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
         mDrawer.closeDrawer(GravityCompat.START);
         int id = item.getItemId();
         switch (id) {
-            case R.id.note:
+            case R.id.note:// 我的笔记
                 Intent intent = new Intent(new Intent(this, NoteActivity.class));
                 startActivityForResult(intent, Config.NOTE_REQUEST_CODE);
                 break;
-            case R.id.video:
+            case R.id.video:// 我的视频
                 getPresenter().startActivity(VideoActivity.class);
                 break;
-            case R.id.shop:
-
+            case R.id.shop:// 在线购买
+                startActivity(new Intent(this, WebActivity.class));
                 break;
-            case R.id.about:
+            case R.id.service:// 在线客服
+                startActivity(new Intent(this, ServiceActivity.class));
+                break;
+            case R.id.about:// 关于我没
                 getPresenter().startActivity(AboutActivity.class);
                 break;
             default:

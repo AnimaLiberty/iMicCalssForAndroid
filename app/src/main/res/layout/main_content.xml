@@ -161,4 +161,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true" />
 
+    <TextView
+        android:id="@+id/tv_indicate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/rl_toolbar"
+        android:padding="5dp"
+        android:text="曲线"
+        android:textColor="@color/color_sel" />
+
 </RelativeLayout>
