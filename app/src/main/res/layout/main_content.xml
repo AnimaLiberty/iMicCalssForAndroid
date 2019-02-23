@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_main2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="cn.lemon.whiteboard.module.main.MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/rl_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#FFF">
+
+        <ImageView
+            android:id="@+id/iv_main_menu"
+            style="@style/ToolBarStyle"
+            android:src="@drawable/page_menu" />
+
+        <ImageView
+            android:id="@+id/iv_record"
+            style="@style/ToolBarStyle"
+            android:layout_toEndOf="@+id/iv_main_menu"
+            android:src="@drawable/record" />
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/iv_record"
+            android:text="00:00"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/iv_play"
+            style="@style/ToolBarStyle"
+            android:layout_toEndOf="@id/tv_time"
+            android:src="@drawable/play"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/iv_bt"
+            style="@style/ToolBarStyle"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/bluetooth_disconn" />
+
+        <ImageView
+            android:id="@+id/iv_save"
+            style="@style/ToolBarStyle"
+            android:layout_toStartOf="@+id/iv_bt"
+            android:src="@drawable/save" />
+
+        <ImageView
+            android:id="@+id/iv_eraser"
+            style="@style/ToolBarStyle"
+            android:layout_toStartOf="@id/iv_save"
+            android:src="@drawable/rubber" />
+
+        <ImageView
+            android:id="@+id/iv_pen"
+            style="@style/ToolBarStyle"
+            android:layout_toStartOf="@id/iv_eraser"
+            android:src="@drawable/pen" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:background="#111111" />
+
+    </RelativeLayout>
+
+    <include
+        layout="@layout/include_toolbar"
+        android:visibility="gone" />
+
+    <cn.lemon.whiteboard.widget.SuperViewPager
+        android:id="@+id/vp_board_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ll_navigation"
+        android:layout_below="@+id/rl_toolbar" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@+id/ll_navigation"
+        android:background="#efefef" />
+    <!-- 底部导航栏 -->
+    <LinearLayout
+        android:id="@+id/ll_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="#FFF"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_picture"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:src="@drawable/picture" />
+
+        <ImageView
+            android:id="@+id/iv_front"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:src="@drawable/front" />
+
+        <ImageView
+            android:id="@+id/iv_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:src="@drawable/left" />
+
+        <TextView
+            android:id="@+id/tv_index"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="1/1" />
+
+        <ImageView
+            android:id="@+id/iv_right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:src="@drawable/right" />
+
+        <ImageView
+            android:id="@+id/iv_after"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:src="@drawable/after" />
+
+        <ImageView
+            android:id="@+id/iv_menu"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:src="@drawable/menu" />
+
+    </LinearLayout>
+
+    <cn.lemon.whiteboard.widget.FloatViewGroup
+        android:id="@+id/float_view_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>
