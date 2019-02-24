@@ -355,7 +355,6 @@ public class BoardView extends View {
                 }
                 mShape.touchDown(mStartX, mStartY);
                 break;
-
             case 1:
                 if (mShape == null) {
                     mShape = new MultiLineShape();

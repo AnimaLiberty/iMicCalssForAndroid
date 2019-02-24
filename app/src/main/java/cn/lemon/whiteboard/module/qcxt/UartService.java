@@ -360,8 +360,8 @@ public class UartService extends Service {
         if (mBluetoothGatt != null) {
             BluetoothGattService RxService = mBluetoothGatt.getService(TX_SERVICE_UUID);
             if (RxService == null) {
-                toastMessage("RX Service UUID 错误！");
-                broadcastUpdate(DEVICE_DOES_NOT_SUPPORT_UART);
+//                toastMessage("RX Service UUID 错误！");
+//                broadcastUpdate(DEVICE_DOES_NOT_SUPPORT_UART);
                 return;
             }
             BluetoothGattCharacteristic RxChar = RxService.getCharacteristic(RX_CHAR_UUID);

@@ -165,8 +165,8 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
                     return;
                 }
                 if (action.equals(UartService.ACTION_GATT_CONNECTED)) {
-                    System.out.println("BroadcastReceiver:ACTION_GATT_CONNECTED");
                     isConnect = true;
+                    System.out.println("BroadcastReceiver:ACTION_GATT_CONNECTED");
                     ivBluetooth.setImageResource(R.drawable.bluetooth_conn);
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -174,7 +174,6 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
                             initCommand();
                         }
                     }, 2000);
-
                 }
                 if (action.equals(UartService.ACTION_GATT_DISCONNECTED)) {
                     isConnect = false;
@@ -182,9 +181,8 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
                     System.out.println("BroadcastReceiver:ACTION_GATT_DISCONNECTED");
                     Log.w("qcxt : ", "设备已断开连接...");
                     if (mService != null) {
-                        mService.close();
+                        mService.disconnect();
                     }
-                    Init_service();
                     searchBluetooth();
                 }
                 if ((action.equals(UartService.ACTION_DATA_AVAILABLE))) {
@@ -474,7 +472,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
         mVpBoard.setOffscreenPageLimit(9);// 防止销毁之前的页面   最多有10页
 
         // 初始化工具栏
-        mAdapter = new FunctionAdapter(this, null,tvIndicate);
+        mAdapter = new FunctionAdapter(this, null, tvIndicate);
         mFloatViews.setAdapter(mAdapter);
     }
 
@@ -853,7 +851,6 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
             Queue<MyPoint> points = pointFactory.getPoints();
             MyPoint p0 = points.poll();
             Log.e("画", "come on");
-
 
             MyPoint p1 = null;
             while (p0 != null) {

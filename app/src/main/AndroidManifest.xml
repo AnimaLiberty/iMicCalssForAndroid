@@ -105,6 +105,7 @@
             android:name=".module.qcxt.DeviceListActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".module.main.MainTwoActivity" />
 
         <service
             android:name="cn.lemon.whiteboard.module.qcxt.UartService"
