@@ -1093,7 +1093,6 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
             }
         }
         int childCount = mVpBoard.getChildCount();
-        Log.e("ToT", childCount + "页");
         if (childCount - 1 >= currentIndex + 1) {
             mVpBoard.setCurrentItem(currentIndex + 1, false);
         }

@@ -30,7 +30,11 @@ public class CurveModel extends SuperModel {
         if (!mAppRootDir.exists()) {
             mAppRootDir.mkdir();
         }
-        mAppVideoDir = getContext().getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            mAppVideoDir = new File(Environment.getExternalStorageDirectory().getPath() + "/qmwk");
+        } else {
+            mAppVideoDir = getContext().getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        }
         if (!mAppVideoDir.exists()) {
             mAppVideoDir.mkdir();
         }
