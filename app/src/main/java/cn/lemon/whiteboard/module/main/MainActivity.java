@@ -199,7 +199,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
                             }
                             if (!getCommand().equals(Integer.toHexString(byteList.get(2)).toLowerCase().substring(1))) {
                                 UnoteManager.readDataFromSerial(bytes);
-                                setCommand("01013100" + Integer.toHexString(byteList.get(2)).toLowerCase().substring(1));
+                                setCommand("01013110" + Integer.toHexString(byteList.get(2)).toLowerCase().substring(1));
                             }
                             isReceiving = false;
                         } else {
@@ -253,7 +253,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
         commandThread();
     }
 
-    private String command = "010131000" + "\r" + "\n";
+    private String command = "010131100" + "\r" + "\n";
 
     private void setCommand(String com) {
         command = com + "\r" + "\n";
@@ -867,7 +867,6 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
         public void refresh() {
             Queue<MyPoint> points = pointFactory.getPoints();
             MyPoint p0 = points.poll();
-            Log.e("画", "come on");
 
             MyPoint p1 = null;
             while (p0 != null) {
@@ -887,11 +886,13 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
                     }
                 } else {
                     if (p1.x < 0 || p1.y < 0) {//画完抬笔
-                        if (fingerTag != 2)
+                        if (fingerTag == 2 || fingerTag == 3) {
+                            drawLine(3, p1.x / App.getInstance().getQCXTScale(), p1.y / App.getInstance().getQCXTScale(), p0.x / App.getInstance().getQCXTScale(), p0.y / App.getInstance().getQCXTScale());
+                        } else if (fingerTag != 2) {
                             drawLine(2, p0.x / App.getInstance().getQCXTScale(), p0.y / App.getInstance().getQCXTScale(), p1.x / App.getInstance().getQCXTScale(), p1.y / App.getInstance().getQCXTScale());
+                        }
                     } else if (p0.x < 0 && p1.x > 0) {//落笔
                         drawLine(0, p1.x / App.getInstance().getQCXTScale(), p1.y / App.getInstance().getQCXTScale(), p0.x / App.getInstance().getQCXTScale(), p0.y / App.getInstance().getQCXTScale());
-//                    mPath.moveTo(p1.x / App.getInstance().getQCXTScale(), p1.y / App.getInstance().getQCXTScale());
                         p0 = p1;
                     } else if (p1.x == -1) {
                         p0 = p1;

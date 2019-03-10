@@ -3,8 +3,6 @@ package cn.lemon.whiteboard.widget.shape;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
-import cn.lemon.whiteboard.widget.BoardView;
-
 /**
  * Created by linlongxin on 2016/10/24.
  */
@@ -31,8 +29,8 @@ public class CurveShape extends DrawShape {
     public void touchMove(int currentX, int currentY) {
 
         int border = (int) mPaint.getStrokeWidth();
-        mRect.set( mStartX - border,  mStartY - border,
-                 mStartX + border,  mStartY + border);
+        mRect.set(mStartX - border, mStartY - border,
+                mStartX + border, mStartY + border);
 
         float mMiddleX = (currentX + mStartX) / 2;
         float mMiddleY = (currentY + mStartY) / 2;
@@ -59,7 +57,7 @@ public class CurveShape extends DrawShape {
         canvas.drawPath(mPath, mPaint);
     }
 
-    public WritablePath getPath(){
+    public WritablePath getPath() {
         mPaint.mColor = mPaintColor;
         mPaint.mWidth = mPaintWidth;
         mPath.mPaint = mPaint;

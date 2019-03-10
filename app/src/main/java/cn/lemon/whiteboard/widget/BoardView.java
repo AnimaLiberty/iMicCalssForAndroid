@@ -2,11 +2,13 @@ package cn.lemon.whiteboard.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.alien95.util.Utils;
+import cn.lemon.whiteboard.R;
 import cn.lemon.whiteboard.widget.shape.CurveShape;
 import cn.lemon.whiteboard.widget.shape.DrawShape;
 import cn.lemon.whiteboard.widget.shape.LineShape;
@@ -46,6 +49,7 @@ public class BoardView extends View {
     private int wipeWidth = 100; // 默认橡皮是最大的
 
     private OnDownAction mDownAction;
+    private Bitmap movePen;
 
     public BoardView(Context context) {
         this(context, null);
@@ -60,6 +64,8 @@ public class BoardView extends View {
         mPaint = new Paint(Paint.DITHER_FLAG);
         mSavePath = new ArrayList<>();
         mDeletePath = new ArrayList<>();
+
+        movePen = BitmapFactory.decodeResource(getResources(), R.drawable.move_pen);
     }
 
     @Override
@@ -76,17 +82,30 @@ public class BoardView extends View {
         canvas.drawBitmap(mDrawBitmap, 0, 0, mPaint);
         //绘制path到canvas
         if (mShape != null && !isClearScreen) {
-            mShape.draw(canvas);
+            if (mShape.isWrite()) {
+                mShape.draw(canvas);
+            }
         } else if (isClearScreen) {
             isClearScreen = false;
         }
-
+        if (mShape != null) {
+            if (mShape.getStartX() >= 0 & mShape.getStartY() >= 0) {
+                if (mShape.getEndX() == 0 && mShape.getEndY() == 0) {
+                    canvas.drawBitmap(movePen, mShape.getStartX(), mShape.getStartY() - movePen.getHeight(), mPaint);
+                } else {
+                    canvas.drawBitmap(movePen, mShape.getEndX(), mShape.getEndY() - movePen.getHeight(), mPaint);
+                }
+            } else {
+                canvas.drawBitmap(movePen, mShape.getStartX() + 1683, mShape.getStartY() - movePen.getHeight() + 1690, mPaint);
+            }
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int currentX = (int) event.getX();
         int currentY = (int) event.getY();
+        Log.d("ToT", "手：" + currentX + " -- " + currentY);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (mDownAction != null) {
@@ -353,12 +372,14 @@ public class BoardView extends View {
                         mShape = new MultiLineShape();
                         break;
                 }
+                mShape.setWrite(true);
                 mShape.touchDown(mStartX, mStartY);
                 break;
             case 1:
                 if (mShape == null) {
                     mShape = new MultiLineShape();
                 }
+                mShape.setWrite(true);
                 mShape.touchMove(currentX, currentY);
                 invalidate();
                 break;
@@ -366,6 +387,7 @@ public class BoardView extends View {
                 if (mShape == null) {
                     mShape = new MultiLineShape();
                 }
+                mShape.setWrite(true);
                 mShape.touchUp(currentX, currentY);
                 //把之前的path保存绘制到mDrawBitmap上
                 ShapeResource resource = new ShapeResource();
@@ -389,9 +411,18 @@ public class BoardView extends View {
                 invalidate();
                 mShape.draw(mCanvas);
                 break;
+            case 3://鼠标悬浮
+                if (mShape == null) {
+                    mShape = new MultiLineShape();
+                }
+                mShape.setWrite(false);
+                mShape.touchMove(currentX, currentY);
+                invalidate();
+                break;
         }
     }
 
+    //设置橡皮宽度
     public void setWipeWidth(int wipeWidth) {
         this.wipeWidth = wipeWidth;
     }

@@ -17,6 +17,7 @@ public abstract class DrawShape {
     protected int mStartY;
     protected int mEndX;
     protected int mEndY;
+    protected boolean isWrite = true;// 是否正在书写
 
     public static int mPaintColor = Color.BLACK;
     public static float mPaintWidth = 3f;// 默认画笔粗细
@@ -31,6 +32,7 @@ public abstract class DrawShape {
         mPaint.setDither(true);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
+
     }
 
     public void touchDown(int startX,int startY){
@@ -62,4 +64,12 @@ public abstract class DrawShape {
     }
     public int getEndX(){return mEndX;}
     public int getEndY(){return mEndY;}
+
+    public boolean isWrite() {
+        return isWrite;
+    }
+
+    public void setWrite(boolean write) {
+        isWrite = write;
+    }
 }
