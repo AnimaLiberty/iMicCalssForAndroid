@@ -76,7 +76,6 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
         implements NavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener, View.OnClickListener {
 
     //    private BoardView mBoardView;
-    private ArrayList<BoardView> mBoardViewList = new ArrayList<>(); // 画板控件集合
     private FloatViewGroup mFloatViews;
     private FunctionAdapter mAdapter;
     private long mFirstPressBackTime = 0;
@@ -445,35 +444,45 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
     }
 
     private ArrayList<BoardFragment> mBoardList = new ArrayList<>();// 画板列表
+    private ArrayList<PageInfo> pageInfoList = new ArrayList<>();
 
     /**
      * 初始化一个画板
      */
     private void initBoard() {
-        BoardFragment boardPage = new BoardFragment();
-        boardPage.setOnDownAction(new BoardView.OnDownAction() {
-            @Override
-            public void dealDownAction() {
-                mFloatViews.checkShrinkViews();
-                dismissWindow();
-            }
-        });
-        boardPage.setBoardViewCreateListener(new BoardFragment.BoardViewCreateListener() {
-            @Override
-            public void onBoardViewCreate(BoardView boardView) {
-                mBoardViewList.add(boardView);
-                mAdapter.refreshBoardView(boardView);//默认传第一页
-            }
-        });
-        mBoardList.add(boardPage);
+        for (int i = 0; i < PageIndexHelper.maxIndex; i++) {
+            BoardFragment boardPage = new BoardFragment();
+            boardPage.setOnDownAction(new BoardView.OnDownAction() {
+                @Override
+                public void dealDownAction() {
+                    mFloatViews.checkShrinkViews();
+                    dismissWindow();
+                }
+            });
+            boardPage.setBoardViewCreateListener(new BoardFragment.BoardViewCreateListener() {
+                @Override
+                public void onBoardViewCreate(BoardView boardView) {
+
+                }
+            });
+            mBoardList.add(boardPage);
+            // 创建对应的PageInfo
+            PageInfo pageInfo = new PageInfo();
+            pageInfo.setVpPosition(i);
+            pageInfo.setPosition(i + 1);
+            pageInfo.setCreate(i == 0);
+            pageInfoList.add(pageInfo);
+        }
         mBoardAdapter = new BoardFragmentPagerAdapter(getSupportFragmentManager(), mBoardList);
         mVpBoard.setAdapter(mBoardAdapter);
         mVpBoard.addOnPageChangeListener(this);
-        mVpBoard.setOffscreenPageLimit(9);// 防止销毁之前的页面   最多有10页
+        mVpBoard.setOffscreenPageLimit(PageIndexHelper.maxIndex);// 防止销毁之前的页面   最多有10页
 
         // 初始化工具栏
-        mAdapter = new FunctionAdapter(this, null, tvIndicate);
+        mAdapter = new FunctionAdapter(this, tvIndicate);
         mFloatViews.setAdapter(mAdapter);
+
+        setCurrentPage();
     }
 
     public PointFactory pointFactory;
@@ -501,16 +510,16 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.recall:
-                mBoardViewList.get(mVpBoard.getCurrentItem()).reCall();
+                getCurrentBoardView().reCall();
                 break;
             case R.id.recover:
-                mBoardViewList.get(mVpBoard.getCurrentItem()).undo();
+                getCurrentBoardView().undo();
                 break;
             case R.id.save_note:
                 showNoteDialog();
                 break;
             case R.id.save_image_to_app:
-                getPresenter().saveImage(mBoardViewList.get(mVpBoard.getCurrentItem()).getDrawBitmap());
+                getPresenter().saveImage(getCurrentBoardView().getDrawBitmap());
                 break;
             case R.id.color:
                 if (isShowingColorSelector) {
@@ -577,9 +586,9 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
         noteDialog.setPositiveClickListener(new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                getPresenter().saveNote(noteDialog.getContent(), mBoardViewList.get(mVpBoard.getCurrentItem()).getNotePath());
+                getPresenter().saveNote(noteDialog.getContent(), getCurrentBoardView().getNotePath());
                 noteDialog.dismiss();
-                mBoardViewList.get(mVpBoard.getCurrentItem()).clearScreen();
+                getCurrentBoardView().clearScreen();
             }
         });
         noteDialog.setPassiveClickListener(new DialogInterface.OnClickListener() {
@@ -589,7 +598,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBoardViewList.get(mVpBoard.getCurrentItem()).updateBitmap();
+                        getCurrentBoardView().updateBitmap();
                     }
                 }, 100);
             }
@@ -597,7 +606,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
     }
 
     public void updateDrawPaths(List<ShapeResource> paths) {
-        mBoardViewList.get(mVpBoard.getCurrentItem()).updateDrawFromPaths(paths);
+        getCurrentBoardView().updateDrawFromPaths(paths);
     }
 
     //设置画笔大小
@@ -784,8 +793,16 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
      *
      * @return
      */
-    private BoardView getCurrentBoardView() {
-        return mBoardViewList.get(mVpBoard.getCurrentItem());
+    public BoardView getCurrentBoardView() {
+        return mBoardList.get(mVpBoard.getCurrentItem()).mBoardView;
+    }
+
+    public List<BoardView> getAllBoardView() {
+        ArrayList<BoardView> boardViews = new ArrayList<>();
+        for (BoardFragment boardFragment : mBoardList) {
+            boardViews.add(boardFragment.mBoardView);
+        }
+        return boardViews;
     }
 
     public void setShowingColorSelector(boolean b) {
@@ -842,7 +859,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
             // TODO Auto-generated method stub
             Log.w("flag", flag + "");
 
-            mBoardViewList.get(mVpBoard.getCurrentItem()).receiveXY(flag, (int) previousX, (int) previousY);
+            getCurrentBoardView().receiveXY(flag, (int) previousX, (int) previousY);
             fingerTag = flag;
         }
 
@@ -912,8 +929,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
 
     @Override
     public void onPageSelected(int position) {
-        tvIndex.setText(position + 1 + "/" + mBoardList.size());
-        mAdapter.refreshBoardView(mBoardViewList.get(position));
+        setCurrentPage();
     }
 
     @Override
@@ -925,18 +941,13 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
     public void onClick(View view) {
         dismissWindow();
         switch (view.getId()) {
-//            case R.id.tv_delete_page:
-//                deletePage();
-//                break;
             case R.id.iv_front:
-//                firstPage();
                 // 撤回
-                mBoardViewList.get(mVpBoard.getCurrentItem()).reCall();
+                getCurrentBoardView().reCall();
                 break;
             case R.id.iv_after:
-//                lastPage();
                 // 恢复
-                mBoardViewList.get(mVpBoard.getCurrentItem()).undo();
+                getCurrentBoardView().undo();
                 break;
             case R.id.iv_left:
                 frontPage();
@@ -1040,39 +1051,53 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
     /**
      * 删除分页
      */
-    private void deletePage() {
-        if (mBoardList.size() > 1) {
-            mBoardViewList.remove(mVpBoard.getCurrentItem());
-            mBoardList.remove(mVpBoard.getCurrentItem());
-            mVpBoard.removeViewAt(mVpBoard.getCurrentItem());
-
-            mBoardAdapter.notifyDataSetChanged();
+    public void deletePage() {
+        if (getPageCount() > 1) {
+            PageInfo currentPage = getCurrentPageInfo();
+            int delPosition = currentPage.getPosition();
+            getCurrentBoardView().clearScreen();
+            currentPage.delete();
+            // 修改其它页的索引
+            for (PageInfo pageInfo : pageInfoList) {
+                if (pageInfo.getVpPosition() != currentPage.getVpPosition()) {
+                    // 修改非当前页的索引
+                    if (pageInfo.getPosition() > delPosition) {
+                        pageInfo.setPosition(pageInfo.getPosition() - 1);
+                    }
+                }
+            }
+            // 跳转上一页或下一页
+            for (PageInfo pageInfo : pageInfoList) {
+                if (pageInfo.isCreate() && pageInfo.getPosition() == delPosition) {
+                    mVpBoard.setCurrentItem(pageInfo.getVpPosition(), false);
+                    return;
+                }
+            }
+            for (PageInfo pageInfo : pageInfoList) {
+                if (pageInfo.isCreate() && pageInfo.getPosition() == delPosition - 1) {
+                    mVpBoard.setCurrentItem(pageInfo.getVpPosition(), false);
+                    return;
+                }
+            }
         } else {
             Toast.makeText(this, "已经是最后一页，不能再删除了", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
-     * 第一页
-     */
-    private void firstPage() {
-        mVpBoard.setCurrentItem(0, false);
-    }
-
-    /**
-     * 最后一页
-     */
-    private void lastPage() {
-        mVpBoard.setCurrentItem(mBoardList.size() - 1, false);
-    }
-
-    /**
      * 上一页
      */
     private void frontPage() {
-        int lastIndex = mVpBoard.getCurrentItem() - 1;
-        if (lastIndex >= 0) {
-            mVpBoard.setCurrentItem(lastIndex, false);
+        PageInfo currentPage = getCurrentPageInfo();
+        if (currentPage.isFirstPage()) {
+            Toast.makeText(this, "已经是第一页了", Toast.LENGTH_SHORT).show();
+        } else {
+            for (PageInfo pageInfo : pageInfoList) {
+                if (currentPage.getPosition() - 1 == pageInfo.getPosition()) {
+                    pageInfo.create();
+                    mVpBoard.setCurrentItem(pageInfo.getVpPosition(), false);
+                }
+            }
         }
     }
 
@@ -1080,45 +1105,23 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
      * 下一页
      */
     private void nextPage() {
-        int currentIndex = mVpBoard.getCurrentItem();
-        // 判断是不是已经创建的最后一页
-        if (currentIndex == mBoardList.size() - 1) {
-            // 是最后一页，判断是否已达页面上限
-            if (mBoardList.size() == 10) {
-                // 已经创建了10页了
-                Toast.makeText(this, "最多可创建10页", Toast.LENGTH_SHORT).show();
-                return;
-            } else {
-                addPage();
+        PageInfo currentPage = getCurrentPageInfo();
+        if (currentPage.isLastPage()) {
+            Toast.makeText(this, "已经是最后一页了", Toast.LENGTH_SHORT).show();
+        } else {
+            for (PageInfo pageInfo : pageInfoList) {
+                if (currentPage.getPosition() + 1 == pageInfo.getPosition()) {
+                    pageInfo.create();
+                    mVpBoard.setCurrentItem(pageInfo.getVpPosition(), false);
+                }
             }
-        }
-        int childCount = mVpBoard.getChildCount();
-        if (childCount - 1 >= currentIndex + 1) {
-            mVpBoard.setCurrentItem(currentIndex + 1, false);
         }
     }
 
-    /**
-     * 添加新画板
-     */
-    private void addPage() {
-        BoardFragment boardPage = new BoardFragment();
-        boardPage.setOnDownAction(new BoardView.OnDownAction() {
-            @Override
-            public void dealDownAction() {
-                mFloatViews.checkShrinkViews();
-                dismissWindow();
-            }
-        });
-        boardPage.setBoardViewCreateListener(new BoardFragment.BoardViewCreateListener() {
-            @Override
-            public void onBoardViewCreate(BoardView boardView) {
-                mBoardViewList.add(boardView);
-            }
-        });
-        mBoardList.add(boardPage);
-        mBoardAdapter.notifyDataSetChanged();
+    private PageInfo getCurrentPageInfo() {
+        return pageInfoList.get(mVpBoard.getCurrentItem());
     }
+
 
     /**
      * 开启录制 Service
@@ -1201,17 +1204,20 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
         }
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        if (ScreenUtil.isCurrentRecording()) {
-//            ScreenUtil.pauseRecord();
-//        }
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        ScreenUtil.resumeRecord();
-//    }
+
+    private void setCurrentPage() {
+        PageInfo pageInfo = pageInfoList.get(mVpBoard.getCurrentItem());
+        tvIndex.setText(pageInfo.getPosition() + "/" + getPageCount());
+    }
+
+    private int getPageCount() {
+        int pageCount = 0;
+        for (PageInfo pageInfo : pageInfoList) {
+            if (pageInfo.isCreate()) {
+                pageCount++;
+            }
+        }
+        return pageCount;
+    }
+
 }

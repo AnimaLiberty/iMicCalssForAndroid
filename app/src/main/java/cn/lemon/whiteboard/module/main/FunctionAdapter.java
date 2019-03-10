@@ -22,11 +22,9 @@ class FunctionAdapter extends FloatAdapter {
             R.drawable.new_curve,
             R.drawable.new_line};
 
-    private BoardView mBoardView;
 
-    public FunctionAdapter(Context context, BoardView boardView, TextView tvIndicate) {
+    public FunctionAdapter(Context context, TextView tvIndicate) {
         super(context);
-        mBoardView = boardView;
         this.tvIndicate = tvIndicate;
     }
 
@@ -54,31 +52,30 @@ class FunctionAdapter extends FloatAdapter {
     public void onItemClick(int position) {
         switch (position) {
             case 0:// 删除页面
-//                mBoardView.clearScreen();  清屏
-//                if (getContext() instanceof MainActivity) {
-//                    ((MainActivity) getContext()).getPresenter().setLocalNoteNull();
-//                }
+                if (getContext() instanceof MainActivity) {
+                    ((MainActivity) getContext()).deletePage();
+                }
                 break;
             case 1:// 多边形
-                mBoardView.setDrawType(Type.MULTI_LINE); // 多边形
+                setPenType(Type.MULTI_LINE); // 多边形
                 MultiLineShape.clear();
                 tvIndicate.setText("多边形");
                 break;
             case 2:// 圆形
-                mBoardView.setDrawType(Type.OVAL);// 圆形
+                setPenType(Type.OVAL);// 圆形
                 tvIndicate.setText("圆形");
                 break;
             case 3:// 矩形
-                mBoardView.setDrawType(Type.RECTANGLE);// 矩形
+                setPenType(Type.RECTANGLE);// 矩形
                 tvIndicate.setText("矩形");
                 break;
             case 4:// 曲线
-                mBoardView.setDrawType(Type.CURVE);// 曲线
+                setPenType(Type.CURVE);// 曲线
                 App.getInstance().getPointFactory().clearScreen();
                 tvIndicate.setText("曲线");
                 break;
             case 5:// 直线
-                mBoardView.setDrawType(Type.LINE);// 直线
+                setPenType(Type.LINE);// 直线
                 tvIndicate.setText("直线");
                 break;
             case 6:
@@ -86,12 +83,10 @@ class FunctionAdapter extends FloatAdapter {
         }
     }
 
-    /**
-     * 刷新控制的画板
-     *
-     * @param boardView
-     */
-    public void refreshBoardView(BoardView boardView) {
-        this.mBoardView = boardView;
+    private void setPenType(int type) {
+        for (BoardView boardView : ((MainActivity) getContext()).getAllBoardView()) {
+            boardView.setDrawType(type);
+        }
     }
+
 }
