@@ -135,7 +135,9 @@ public class AccountModel extends SuperModel {
                     Utils.Toast("缓存目录不存在");
                 } else {
                     File[] files = cacheDir.listFiles();
-                    videoFiles.addAll(Arrays.asList(files));
+                    if (files != null) {
+                        videoFiles.addAll(Arrays.asList(files));
+                    }
                 }
                 mHandler.post(new Runnable() {
                     @Override

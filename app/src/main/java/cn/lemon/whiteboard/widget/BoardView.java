@@ -88,6 +88,10 @@ public class BoardView extends View {
         } else if (isClearScreen) {
             isClearScreen = false;
         }
+        if (mShape instanceof WipeShape) {
+            // 橡皮擦就不要显示笔了吧
+            return;
+        }
         if (mShape != null) {
             if (mShape.getStartX() >= 0 & mShape.getStartY() >= 0) {
                 if (mShape.getEndX() == 0 && mShape.getEndY() == 0) {
@@ -301,6 +305,10 @@ public class BoardView extends View {
                     break;
             }
         }
+    }
+
+    public int getDrawType() {
+        return mDrawType;
     }
 
     public void setDrawType(int type) {

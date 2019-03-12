@@ -99,6 +99,8 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
     private final int REQUEST_LOCATION_CODE = 1001;// 请求定位权限
     private final int AUDIO_RECORD_CODE = 1003;// 请求录音权限请求码
     private final int PERMISSION_GROUP_CODE = 1002;// 请求一组权限
+    private int tempDrawType = 0;// 临时保存橡皮擦类型
+    private String tempDrawTypeTxt;
 
 
     private UartService mService = null;
@@ -689,6 +691,16 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
             mWipeWindow.dismiss();
             isShowingWipe = false;
         }
+        if (getCurrentBoardView().getDrawType() == Type.WIPE) {
+            // 如果是橡皮，那就切换成笔
+            if (tempDrawType == 0) {
+                tempDrawType = Type.CURVE;
+                tempDrawTypeTxt = "曲线";
+            }
+            tvIndicate.setText(tempDrawTypeTxt);
+            getCurrentBoardView().setDrawType(tempDrawType);
+            return;
+        }
         isShowingPenSet = true;
         View view = LayoutInflater.from(this).inflate(R.layout.main_window_pen_set, null);
         mPenSetWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT,
@@ -754,26 +766,21 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
             @Override
             public void onClick(View view) {
                 // 最小的橡皮
-                getCurrentBoardView().setWipeWidth(20);
-                getCurrentBoardView().setDrawType(Type.WIPE);
+                setEraser(20);
             }
         });
         view.findViewById(R.id.rl_middle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 中间的橡皮
-                getCurrentBoardView().setWipeWidth(50);
-                getCurrentBoardView().setDrawType(Type.WIPE);
-                mWipeWindow.dismiss();
+                setEraser(50);
             }
         });
         view.findViewById(R.id.rl_big).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 最大的橡皮
-                getCurrentBoardView().setWipeWidth(100);
-                getCurrentBoardView().setDrawType(Type.WIPE);
-                mWipeWindow.dismiss();
+                setEraser(100);
             }
         });
         view.findViewById(R.id.ll_clean).setOnClickListener(new View.OnClickListener() {
@@ -785,7 +792,21 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
                 mWipeWindow.dismiss();
             }
         });
+        tempDrawTypeTxt = tvIndicate.getText().toString();
+        tvIndicate.setText("橡皮擦");
         mWipeWindow.showAsDropDown(toolBar);
+    }
+
+    /**
+     * 设置橡皮擦
+     *
+     * @param size 橡皮大小
+     */
+    private void setEraser(int size) {
+        tempDrawType = getCurrentBoardView().getDrawType();
+        getCurrentBoardView().setDrawType(Type.WIPE);
+        getCurrentBoardView().setWipeWidth(size);
+        mWipeWindow.dismiss();
     }
 
     /**
