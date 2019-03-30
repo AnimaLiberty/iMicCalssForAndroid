@@ -793,7 +793,6 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
             }
         });
         tempDrawTypeTxt = tvIndicate.getText().toString();
-        tvIndicate.setText("橡皮擦");
         mWipeWindow.showAsDropDown(toolBar);
     }
 
@@ -806,6 +805,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
         tempDrawType = getCurrentBoardView().getDrawType();
         getCurrentBoardView().setDrawType(Type.WIPE);
         getCurrentBoardView().setWipeWidth(size);
+        tvIndicate.setText("橡皮擦");
         mWipeWindow.dismiss();
     }
 
@@ -909,6 +909,7 @@ public class MainActivity extends ToolbarActivity<MainPresenter>
                     if (p1.x < 0 || p1.y < 0) {//画完抬笔
                         if (fingerTag == 2 || fingerTag == 3) {
                             drawLine(3, p1.x / App.getInstance().getQCXTScale(), p1.y / App.getInstance().getQCXTScale(), p0.x / App.getInstance().getQCXTScale(), p0.y / App.getInstance().getQCXTScale());
+                            p0 = p1;
                         } else if (fingerTag != 2) {
                             drawLine(2, p0.x / App.getInstance().getQCXTScale(), p0.y / App.getInstance().getQCXTScale(), p1.x / App.getInstance().getQCXTScale(), p1.y / App.getInstance().getQCXTScale());
                         }
