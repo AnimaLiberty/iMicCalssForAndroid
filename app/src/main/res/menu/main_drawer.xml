@@ -12,7 +12,8 @@
     <item
         android:id="@+id/shop"
         android:icon="@drawable/icon_menu_shop"
-        android:title="在线购买" />
+        android:title="在线购买"
+        android:visible="false" />
     <item
         android:id="@+id/service"
         android:icon="@drawable/icon_menu_service"
